@@ -1,0 +1,17 @@
+        TreeView1.Nodes.Clear()
+        Dim i As Integer
+        Dim j As Integer
+        Dim city As String
+        Dim country As String
+        For j = 0 To Me.Test2tDataSet.countries.Rows.Count - 1
+            country = Me.Test2tDataSet.countries.Rows.Item(j).ItemArray(1).ToString()
+            Dim nod_country As TreeNode = New TreeNode(country)
+            Me.CitiesTableAdapter.FillBy(Me.Test2tDataSet.cities, Int32.Parse(Me.Test2tDataSet.countries.Rows.Item(j).ItemArray(0).ToString()))
+            For i = 0 To Me.Test2tDataSet.cities.Rows.Count - 1
+                city = Me.Test2tDataSet.cities.Rows.Item(i).ItemArray(2).ToString()
+                Dim nod_city As TreeNode = New TreeNode(city)
+                nod_country.Nodes.Add(nod_city)
+                nod_city = Nothing
+            Next
+            Me.TreeView1.Nodes.Add(nod_country)
+        Next

@@ -1,0 +1,36 @@
+        TreeView1.Nodes.Clear()
+        Dim i As Integer
+        Dim j As Integer
+	Dim k As Integer
+        Dim L As Integer
+        Dim city As String
+        Dim country As String
+        Dim street As String
+        Dim order_name As String
+        For j = 0 To Me.Test4tDataSet.countries.Rows.Count - 1
+            country = Me.Test4tDataSet.countries.Rows.Item(j).ItemArray(1).ToString()
+            Dim nod_country As TreeNode = New TreeNode(country)
+            Me.CitiesTableAdapter.FillBy(Me.Test4tDataSet.cities, Int32.Parse(Me.Test4tDataSet.countries.Rows.Item(j).ItemArray(0).ToString()))
+            For i = 0 To Me.Test4tDataSet.cities.Rows.Count - 1
+                city = Me.Test4tDataSet.cities.Rows.Item(i).ItemArray(2).ToString()
+                Dim nod_city As TreeNode = New TreeNode(city)
+		Me.StreetsTableAdapter.FillBy(Me.Test4tDataSet.streets, Int32.Parse(Me.Test4tDataSet.cities.Rows.Item(i).ItemArray(0).ToString()))
+                For k=0 To Me.Test4tDataSet.streets.Rows.Count - 1
+                 street = Me.Test4tDataSet.streets.Rows.Item(k).ItemArray(2).ToString()
+                 Dim nod_street As TreeNode = New TreeNode(street)
+		 Me.OrdersTableAdapter.FillBy(Me.Test4tDataSet.orders, Int32.Parse(Me.Test4tDataSet.streets.Rows.Item(k).ItemArray(0).ToString()))
+		 For L=0 To Me.Test4tDataSet.orders.Rows.Count - 1
+		  order_name = Me.Test4tDataSet.orders.Rows.Item(L).ItemArray(3).ToString()
+		  Dim nod_ordername As TreeNode = New TreeNode(order_name)
+		  nod_street.Nodes.Add(nod_ordername)
+		  nod_ordername=Nothing
+		 Next	
+		 nod_city.Nodes.Add(nod_street)
+		 nod_street=Nothing
+                Next
+		'Me.TreeView1.Nodes.Add(nod_city)
+                nod_country.Nodes.Add(nod_city)
+                nod_city = Nothing
+            Next
+            Me.TreeView1.Nodes.Add(nod_country)
+        Next
