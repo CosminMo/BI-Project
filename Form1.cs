@@ -10,9 +10,16 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BI
+
+
 {
+
     public partial class Form1 : Form
     {
+        String conn_string = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source = C:\\Users\\Cosmin\\Desktop\\BI-Project\\tree view supp files\\test4t.accdb; Persist Security Info = False";
+        String error_message = "";
+        String q = "";
+        OleDbConnection conexiune = null;
         public Form1()
         {
             InitializeComponent();
@@ -23,43 +30,12 @@ namespace BI
 
         }
 
+
+        
+
         private void btnAdaugare_Click(object sender, EventArgs e)
         {
-            TreeNode animale = new TreeNode("animale");
-            
-            
-            TreeNode pisici = new TreeNode("pisici");
-            TreeNode pisiciNegre = new TreeNode("pisici negre");
-
-            pisici.Nodes.Add(pisiciNegre);
-            animale.Nodes.Add(pisici);
-
-            TreeNode pisiciNegreMici = new TreeNode("pisici negre mici");
-
-            pisiciNegre.Nodes.Add(pisiciNegreMici);
-
-            treeView1.Nodes.Add(animale);
-
-
-            String connection = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=|DataDirectory|\\Tables.accdb;Persist Security Info=True";
-            string sql = "SELECT Clients  FROM Tables";
-            using (OleDbConnection conn = new OleDbConnection(connection))
-            {
-                conn.Open();
-                DataSet ds = new DataSet();
-                DataGridView dataGridView1 = new DataGridView();
-                using (OleDbDataAdapter adapter = new OleDbDataAdapter(sql, conn))
-                {
-                    adapter.Fill(ds);
-                    dataGridView1.DataSource = ds;
-                    // Of course, before addint the datagrid to the hosting form you need to 
-                    // set position, location and other useful properties. 
-                    // Why don't you create the DataGrid with the designer and use that instance instead?
-                    this.Controls.Add(dataGridView1);
-                }
-            }
-
-
+           
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -69,7 +45,72 @@ namespace BI
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            connectToolStripMenuItem.PerformClick();
+        }
 
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void connectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                conexiune = new OleDbConnection(conn_string);
+                conexiune.Open();
+                disconnectToolStripMenuItem.Enabled=true;
+                connectToolStripMenuItem.Enabled = false;
+            }
+            catch(Exception Ex) { MessageBox.Show(Ex.Message); }
+        }
+
+        private void disconnectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                conexiune.Close();
+                disconnectToolStripMenuItem.Enabled = false;
+                connectToolStripMenuItem.Enabled = true;
+            }
+            catch(Exception Ex) { MessageBox.Show(Ex.Message); }
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            disconnectToolStripMenuItem.PerformClick();
+        }
+
+        private void run_Query()
+        {
+            error_message = "";
+            q = txtQuery.Text;
+            try
+            {
+                OleDbCommand comanda = new OleDbCommand(q, conexiune);
+                OleDbDataAdapter adaptor = new OleDbDataAdapter(comanda);
+
+                DataTable dt = new DataTable();
+                adaptor.SelectCommand = comanda;
+                adaptor.Fill(dt);
+
+                Rezultat.DataSource = dt;
+                Rezultat.AutoResizeColumns();
+
+            }
+            catch(Exception Ex)
+            {
+                error_message = Ex.Message;
+                MessageBox.Show(error_message);
+            }
+        }
+
+        private void runQueryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Cursor = Cursors.WaitCursor;
+
+            run_Query();
+            this.Cursor = Cursors.Default;
         }
     }
 }
