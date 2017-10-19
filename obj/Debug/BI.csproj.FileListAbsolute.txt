@@ -1,1 +1,2 @@
 C:\Users\Cosmin\Desktop\BI-Project\BI\BI\bin\Debug\BI.exe.config
+C:\Users\Cosmin\Desktop\BI-Project\bin\Debug\BI.exe.config
